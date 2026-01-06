@@ -11,6 +11,19 @@ This GitHub Action provides intelligent code analysis through specialized agents
 - **Documenter**: Technical writing to generate changelogs and release notes
 - **Tester**: Automated unit test generation for new functions
 
+### Smart Standards System
+
+The action automatically loads relevant coding standards based on the files changed in your PR:
+
+- **Global standards** (`standards/global.md`): Applied to all projects
+- **Language-specific standards**: Automatically loaded based on file extensions
+  - `standards/csharp.md` for `.cs` files
+  - `standards/react.md` for `.jsx`, `.tsx` files
+  - `standards/python.md` for `.py` files
+  - And more...
+
+This ensures that AI agents provide feedback aligned with your team's coding conventions and best practices.
+
 ## Usage
 
 ### Prerequisites
@@ -191,8 +204,9 @@ jobs:
 
 1. The action is triggered on pull request events
 2. It retrieves the PR diff via GitHub API
-3. The specified agent analyzes the changes using your chosen AI model (via LiteLLM)
-4. Feedback is automatically posted as a comment on the PR
+3. **Smart standards loading**: Automatically detects file types in the diff and loads relevant coding standards
+4. The specified agent analyzes the changes using your chosen AI model (via LiteLLM) with the loaded standards as context
+5. Feedback is automatically posted as a comment on the PR, aligned with your coding standards
 
 ## Agent Details
 
@@ -229,6 +243,35 @@ jobs:
 - API key for your chosen AI provider (OpenAI, Anthropic, Google, etc.)
 - GitHub repository with Actions enabled
 - Pull request workflow
+
+## Project Structure
+
+```
+ai-core/
+├── action.yml              # GitHub Action configuration
+├── main_launcher.py        # Main entry point with smart standards loading
+├── agents/                 # Specialized AI agents
+│   ├── reviewer_agent.py
+│   ├── security_agent.py
+│   ├── documenter_agent.py
+│   └── tester_agent.py
+└── standards/              # Coding standards (optional)
+    ├── global.md           # Universal standards for all projects
+    ├── csharp.md           # C# specific standards
+    ├── react.md            # React/TypeScript standards
+    └── python.md           # Python standards (add your own)
+```
+
+### Customizing Standards
+
+You can customize the coding standards by:
+
+1. **Fork this repository** or use it as a template
+2. **Edit the standards files** in the `standards/` directory to match your team's conventions
+3. **Add new standards files** for other languages (e.g., `java.md`, `go.md`)
+4. **Update the mapping** in `main_launcher.py` to associate file extensions with your new standards files
+
+The system will automatically load the relevant standards based on the file extensions detected in your PR diffs.
 
 ## Why LiteLLM?
 
