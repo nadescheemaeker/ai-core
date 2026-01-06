@@ -1,17 +1,22 @@
-name: 'Studio AI Code Reviewer'
-description: 'Analyse les PR avec l expertise du studio'
+name: "Studio AI Multi-Agent"
+description: "Library of specialized agents for development"
 inputs:
   openai_api_key:
-    description: 'Clé API OpenAI'
+    description: "OpenAI API Key"
     required: true
+  agent_type:
+    description: "Agent type to launch (reviewer, security, doc)"
+    required: false
+    default: "reviewer"
 runs:
-  using: 'composite'
+  using: "composite"
   steps:
-    - name: Run Review Script
+    - name: Run Studio Agent
       shell: bash
       env:
         OPENAI_API_KEY: ${{ inputs.openai_api_key }}
         GITHUB_TOKEN: ${{ github.token }}
+        AGENT_TYPE: ${{ inputs.agent_type }}
       run: |
-        pip install openai requests
-        python ${{ github.action_path }}/review_agent.py
+        pip install openai requests --quiet
+        python ${{ github.action_path }}/main_launcher.py
