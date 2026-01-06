@@ -1,0 +1,17 @@
+name: 'Studio AI Code Reviewer'
+description: 'Analyse les PR avec l'expertise du studio'
+inputs:
+  openai_api_key:
+    description: 'Clé API OpenAI'
+    required: true
+runs:
+  using: 'composite'
+  steps:
+    - name: Run Review Script
+      shell: bash
+      env:
+        OPENAI_API_KEY: ${{ inputs.openai_api_key }}
+        GITHUB_TOKEN: ${{ github.token }}
+      run: |
+        pip install openai requests
+        python ${{ github.action_path }}/review_agent.py
