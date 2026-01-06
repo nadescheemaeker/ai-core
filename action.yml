@@ -1,5 +1,5 @@
 name: 'Studio AI Code Reviewer'
-description: 'Analyse les PR avec l'expertise du studio'
+description: 'Analyse les PR avec l expertise du studio'
 inputs:
   openai_api_key:
     description: 'Clé API OpenAI'
