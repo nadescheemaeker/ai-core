@@ -1,22 +1,30 @@
 name: "Studio AI Multi-Agent"
-description: "Library of specialized agents for development"
+description: "Library of specialized agents using LiteLLM for multi-model support"
 inputs:
-  openai_api_key:
-    description: "OpenAI API Key"
+  api_key:
+    description: "API Key (OpenAI, Anthropic, Gemini, etc.)"
     required: true
   agent_type:
-    description: "Agent type to launch (reviewer, security, doc)"
+    description: "Agent type to launch (reviewer, security, doc, tester)"
     required: false
     default: "reviewer"
+  model_name:
+    description: "Model name (e.g., gpt-4o, claude-3-5-sonnet-20240620, gemini/gemini-1.5-pro)"
+    required: false
+    default: "gpt-4o"
+
 runs:
   using: "composite"
   steps:
     - name: Run Studio Agent
       shell: bash
       env:
-        OPENAI_API_KEY: ${{ inputs.openai_api_key }}
+        # Using a generic variable for the API KEY
+        CUSTOM_API_KEY: ${{ inputs.api_key }}
         GITHUB_TOKEN: ${{ github.token }}
         AGENT_TYPE: ${{ inputs.agent_type }}
+        MODEL_NAME: ${{ inputs.model_name }}
       run: |
-        pip install openai requests --quiet
+        # Installing litellm instead of openai
+        pip install litellm requests --quiet
         python ${{ github.action_path }}/main_launcher.py
