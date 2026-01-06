@@ -282,6 +282,238 @@ LiteLLM provides:
 - **Cost optimization**: Choose the most cost-effective model for each task
 - **Flexibility**: Test different models to find the best fit for your needs
 
+### When to Use What?
+
+This project uses **LiteLLM** by default, which is perfect for:
+
+- ✅ **Rapid prototyping**: Get started quickly with minimal setup
+- ✅ **Multi-provider support**: Easy switching between AI providers
+- ✅ **Small to medium workloads**: GitHub Actions, personal projects, team tools
+- ✅ **Simplicity**: Straightforward integration without complex infrastructure
+
+### Production Alternatives for High-Scale Workloads
+
+For production environments with high traffic and demanding requirements, consider these enterprise-grade alternatives:
+
+#### TrueFoundry
+
+[TrueFoundry](https://www.truefoundry.com/) is designed for production ML deployments:
+
+- **Infrastructure management**: Auto-scaling, monitoring, and cost optimization
+- **Model serving**: High-throughput inference with load balancing
+- **Observability**: Built-in logging, metrics, and tracing
+- **Multi-cloud support**: Deploy on AWS, GCP, Azure, or on-premises
+
+**Best for**: Teams needing enterprise-grade ML infrastructure with DevOps automation.
+
+#### Portkey
+
+[Portkey](https://portkey.ai/) is an AI gateway focused on reliability and control:
+
+- **Load balancing**: Distribute requests across multiple providers/models
+- **Fallback & retries**: Automatic failover when a provider is down
+- **Caching**: Reduce costs and latency with intelligent caching
+- **Rate limiting & quotas**: Fine-grained control over API usage
+- **Analytics & monitoring**: Detailed insights into usage, costs, and performance
+- **Prompt management**: Version control and A/B testing for prompts
+
+**Best for**: Production applications requiring high reliability, cost control, and observability.
+
+#### Migration Path
+
+The architecture is designed to be modular. To migrate from LiteLLM to TrueFoundry or Portkey:
+
+1. Replace the `completion()` call in `main_launcher.py` with your chosen provider's SDK
+2. Update environment variables for authentication
+3. Adjust configuration for caching, retries, and load balancing as needed
+
+The rest of the agent logic remains unchanged.
+
+## Future Roadmap
+
+### Self-Healing PRs (Auto-Correction)
+
+Currently, agents post comments with suggestions. The next evolution is **automatic code correction**:
+
+**The Vision**: When the security agent detects a vulnerability, it doesn't just explain it—it generates and proposes the actual fix.
+
+**Implementation Approaches**:
+
+- Use GitHub's **suggested changes** feature in pull request review comments
+- Create a new commit on the PR branch with the corrected code
+- Open a separate "fix PR" that targets the original PR branch
+- Use GitHub's `check_run` API to provide inline code suggestions
+
+**Example Flow**:
+
+1. Security agent detects an SQL injection vulnerability
+2. Generates sanitized code with parameterized queries
+3. Posts the fix as a GitHub suggestion that the developer can accept with one click
+
+### Long-Term Memory (Studio Knowledge Base)
+
+Current agents only see the current PR. The next step is **contextual awareness across your entire codebase and project history**.
+
+**RAG (Retrieval-Augmented Generation) Integration**:
+
+- Index all repositories, documentation, and tickets (Jira/Linear) in a vector database (Pinecone, Milvus, Weaviate)
+- Enable agents to search historical context before providing feedback
+
+**Enhanced Capabilities**:
+
+- **Historical Pattern Recognition**: "Warning: You're modifying this function. We had a similar bug in Project X 6 months ago related to cache management."
+- **Cross-Repository Learning**: "This authentication pattern was deprecated in favor of OAuth2 in the API service repository."
+- **Ticket Correlation**: "This change addresses JIRA-1234, but doesn't implement the caching requirement mentioned in the spec."
+
+**Technical Implementation**:
+
+```python
+# Pseudocode example
+def get_relevant_context(diff_text):
+    # Embed the current changes
+    embeddings = embed_code(diff_text)
+
+    # Search vector database for similar patterns
+    similar_issues = vector_db.search(embeddings, limit=5)
+    similar_code = vector_db.search_code(embeddings, limit=3)
+
+    # Augment agent prompt with historical context
+    return f"Related past issues: {similar_issues}\nSimilar code patterns: {similar_code}"
+```
+
+### Project Management & Onboarding Agents
+
+Extend AI capabilities beyond pure code review to **team productivity and knowledge management**.
+
+#### Spec Validator Agent
+
+**Purpose**: Ensure PRs actually implement what was specified in the ticket.
+
+**How It Works**:
+
+- Fetches the original Jira/Linear ticket linked to the PR
+- Extracts acceptance criteria and requirements
+- Compares PR changes against the specification
+- Flags missing features or scope creep
+
+**Example Output**:
+
+```
+⚠️ Spec Validation Issues:
+- ✅ User authentication implemented
+- ✅ Password validation added
+- ❌ Missing: "Remember me" functionality (JIRA-1234, AC-3)
+- ⚠️ Out of scope: Dark mode toggle (not in original ticket)
+```
+
+#### Onboarding Assistant Agent
+
+**Purpose**: Help new developers understand your codebase through natural language queries.
+
+**Capabilities**:
+
+- Answer questions like "How does our deployment pipeline work?"
+- Provide code examples: "Show me how to add a new API endpoint"
+- Explain architecture: "What's the difference between UserService and AuthService?"
+- Generate onboarding documentation automatically
+
+**Implementation**:
+
+- Index codebase, README files, and documentation
+- Create a chatbot interface (Slack bot, GitHub Discussions, or web UI)
+- Use RAG to provide accurate, repository-specific answers
+
+### 📊 Studio Analytics Dashboard
+
+Track and optimize your AI agents' performance with comprehensive metrics.
+
+#### Key Metrics to Track
+
+**1. Acceptance Rate**
+
+- How many AI suggestions are actually accepted by developers?
+- Which agent types provide the most valuable feedback?
+- Track by team, repository, and time period
+
+**2. Cost Management**
+
+- Token consumption per PR
+- Cost breakdown by agent type and model
+- Budget alerts and optimization recommendations
+
+**3. Code Quality Impact**
+
+- Bugs in production before vs. after AI-core adoption
+- Time to fix issues (with AI suggestions vs. without)
+- Code review cycle time reduction
+
+**4. Agent Performance**
+
+- Response time per agent
+- Model effectiveness (GPT-4 vs. Claude vs. Gemini)
+- False positive rate for security/quality issues
+
+#### Sample Dashboard Metrics
+
+```
+Studio AI Analytics - December 2025
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Overall Performance
+  • PRs Analyzed: 1,247
+  • Suggestions Made: 3,891
+  • Acceptance Rate: 68%
+  • Avg. Review Time: 12 min (↓45% from baseline)
+
+Cost Breakdown
+  • Total Spend: $287.50
+  • Cost per PR: $0.23
+  • Most Used Model: GPT-4o (72%)
+
+Quality Impact
+  • Production Bugs: 12 (↓38% vs. last quarter)
+  • Security Issues Prevented: 47
+  • Code Coverage: 87% (↑12%)
+
+Agent Statistics
+  • Reviewer: 542 PRs (71% acceptance)
+  • Security: 198 PRs (89% acceptance)
+  • Tester: 312 PRs (54% acceptance)
+  • Documenter: 195 PRs (82% acceptance)
+```
+
+#### Implementation Options
+
+**Data Collection**:
+
+- Store agent interactions in a database (PostgreSQL, MongoDB)
+- Track GitHub API events and PR metadata
+- Log token usage and model choices
+
+**Visualization**:
+
+- Build a custom dashboard with React/Next.js + Chart.js
+- Use existing tools like Grafana, Metabase, or Retool
+- GitHub Actions summary reports
+
+**Actionable Insights**:
+
+- Automatically adjust model selection based on cost/performance
+- Identify which standards need clarification (high rejection rate)
+- A/B test different prompts and agents
+
+### Getting Started with Advanced Features
+
+These features represent the evolution of AI-core from a simple code review tool to a **comprehensive AI development studio**. We welcome contributions in any of these areas!
+
+**Priority Roadmap**:
+
+1. **Phase 1**: Self-healing PRs with GitHub suggestions
+2. **Phase 2**: Basic analytics dashboard
+3. **Phase 3**: RAG integration for long-term memory
+4. **Phase 4**: Project management agents
+
+See our [Contributing Guide](#contributing) to get involved.
+
 ## License
 
 MIT
