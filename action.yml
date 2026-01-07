@@ -25,6 +25,6 @@ runs:
         AGENT_TYPE: ${{ inputs.agent_type }}
         MODEL_NAME: ${{ inputs.model_name }}
       run: |
-        # Installing litellm instead of openai
+        # Installing litellm
         pip install litellm requests --quiet
         python ${{ github.action_path }}/main_launcher.py
