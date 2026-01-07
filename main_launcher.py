@@ -63,7 +63,7 @@ def main():
     # 2. Dynamic Agent Loading
     try:
         # Thanks to sys.path.append(BASE_DIR), this will now work
-        agent_module = importlib.import_module(f"agents.{agent_type}")
+        agent_module = importlib.import_module(f"{agent_type}.agent")
         prompts = agent_module.get_prompt(diff_text)
     except ImportError as e:
         print(f"Error importing agent '{agent_type}': {e}")
