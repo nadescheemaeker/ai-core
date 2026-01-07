@@ -36,7 +36,7 @@ def get_relevant_standards(diff_text):
             detected_exts.add(ext)
 
     # 3. Specific standards
-    mapping = {"py": "python.md", "js": "javascript.md", "jsx": "react.md", "tsx": "react.md"}
+    mapping = {"py": "python.md", "js": "javascript.md", "jsx": "react.md", "tsx": "react.md", "cs": "csharp.md"}
     for ext in detected_exts:
         std_file = mapping.get(ext)
         if std_file:
