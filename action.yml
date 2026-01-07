@@ -21,6 +21,8 @@ runs:
       env:
         # Using a generic variable for the API KEY
         CUSTOM_API_KEY: ${{ inputs.api_key }}
+        AZURE_API_BASE: ${{ inputs.api_base }}
+        AZURE_API_VERSION: ${{ inputs.api_version }}
         GITHUB_TOKEN: ${{ github.token }}
         AGENT_TYPE: ${{ inputs.agent_type }}
         MODEL_NAME: ${{ inputs.model_name }}
