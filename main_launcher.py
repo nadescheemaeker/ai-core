@@ -73,19 +73,35 @@ def main():
     relevant_standards = get_relevant_standards(diff_text)
     system_message = f"{prompts['system']}\n\nHERE ARE THE STANDARDS TO FOLLOW:\n{relevant_standards}"
 
-    # 4. AI Call and Publish Feedback (LiteLLM)
-    response = completion(
-        model=model_name,
-        messages=[
-            {"role": "system", "content": system_message},
-            {"role": "user", "content": prompts["user"]}
-        ],
-        api_key=api_key
-    )
-    
-    feedback = response.choices[0].message.content
+    # 4. AI Call and Publish Feedback (LiteLLM) with Error Handling
+    try:
+        response = completion(
+            model=model_name,
+            messages=[
+                {"role": "system", "content": system_message},
+                {"role": "user", "content": prompts["user"]}
+            ],
+            api_key=api_key
+        )
+        
+        feedback = response.choices[0].message.content
+        
+    except litellm.RateLimitError as e:
+        # Check specifically for billing quota issues
+        if "insufficient_quota" in str(e):
+            print("CRITICAL: OpenAI Billing Hard Limit Reached.")
+            feedback = "⚠️ **AI Review Failed:** The OpenAI API quota has been exceeded. Please check billing details."
+        else:
+            print(f"Rate limit hit: {e}")
+            feedback = "⚠️ **AI Review Failed:** Rate limit exceeded. Please re-run the job later."
+            
+    except Exception as e:
+        print(f"Unexpected error: {e}")
+        feedback = f"⚠️ **AI Review Failed:** An unexpected error occurred: {e}"
+
+    # 5. Post the result (either the review or the error message)
     comment_url = f"https://api.github.com/repos/{repo}/issues/{pr_number}/comments"
     requests.post(comment_url, headers={"Authorization": f"token {github_token}"}, json={"body": feedback})
-
+    
 if __name__ == "__main__":
     main()
