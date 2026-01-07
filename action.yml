@@ -4,6 +4,12 @@ inputs:
   api_key:
     description: "API Key (OpenAI, Anthropic, Gemini, etc.)"
     required: true
+  api_base:
+    description: "Azure Endpoint URL (e.g., https://name.openai.azure.com/)"
+    required: false
+  api_version:
+    description: "Azure API Version"
+    required: false
   agent_type:
     description: "Agent type to launch (reviewer, security, doc, tester)"
     required: false
@@ -12,7 +18,6 @@ inputs:
     description: "Model name (e.g., gpt-4o, claude-3-5-sonnet-20240620, gemini/gemini-1.5-pro)"
     required: false
     default: "gpt-4o"
-
 runs:
   using: "composite"
   steps:
