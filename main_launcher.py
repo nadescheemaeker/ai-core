@@ -2,6 +2,7 @@ import os
 import sys
 import requests
 import importlib
+import litellm
 from litellm import completion
 
 # --- PATH CONFIGURATION ---
